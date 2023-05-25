@@ -3,6 +3,18 @@ import Papa from 'papaparse';
 import { useState } from 'react';
 import { formatDate } from './utils/formatDateUtils';
 
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tfoot,
+  Tr,
+  Th,
+  Td,
+  TableCaption,
+  TableContainer,
+} from '@chakra-ui/react'
+
 function App() {
 
   const [data, setData] = useState([]);
@@ -54,7 +66,37 @@ function App() {
           />
           <button>Show Data</button>
         </form>
+
+        <TableContainer>
+          <Table variant='simple'>
+            <TableCaption>Longest period of time worked together by pair</TableCaption>
+            <Thead>
+              <Tr>
+                <Th>Employee ID #1</Th>
+                <Th>Employee ID #2</Th>
+                <Th isNumeric>Project ID</Th>
+                <Th isNumeric>Days worked</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+            {events?.map((event) => (
+              <Event
+                key={event.id}
+                {...event} />))}
+
+            </Tbody>
+            {/* <Tfoot>
+              <Tr>
+                <Th>To convert</Th>
+                <Th>into</Th>
+                <Th isNumeric>multiply by</Th>
+              </Tr>
+            </Tfoot> */}
+          </Table>
+        </TableContainer>
       </div>
+
+
     </>
   );
 }
