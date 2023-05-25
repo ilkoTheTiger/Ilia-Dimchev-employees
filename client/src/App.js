@@ -61,30 +61,28 @@ function App() {
   const makeProjectsObject = () => {
     let projectsObject = Object.fromEntries(projects.entries())
     for (const projectID of Object.values(projectsObject)) {
-      // projectsObject = { ...projectsObject, '12':{empId: 1, emp2Id: 2, daysWorked: 3}}
-
       let employeesByProjectArray = data?.filter(row => row.ProjectID == projectID)
       let n = employeesByProjectArray.length;
       const pairs = getPairsByProject(employeesByProjectArray, n)
-      // getPairByProject(employeesByProjectArray)
-      // projectsObject[projectID] = [data[0]]
+      console.log(projectsObject)
+      
       for (const pair in pairs) {
         let first = data?.filter(row => row.EmpID == pairs[pair][0] && projectID == row.ProjectID)
         let second = data?.filter(row => row.EmpID == pairs[pair][1] && projectID == row.ProjectID)
         const daysWorkedTogether = findDaysWorkedTogether(first[0].DateFrom, second[0].DateFrom, first[0].DateTo, second[0].DateTo)
-
+        
         if (projectsObject[projectID].DaysWorked < daysWorkedTogether || !projectsObject[projectID].DaysWorked) {
-          projectsObject[projectID] = {
-            id: 1,
-            FirstEmpID: pairs[pair][0],
-            SecondEmpID: pairs[pair][1],
-            ProjectID: projectID,
-            DaysWorked: daysWorkedTogether
-          }
-          setResults(projectsObject[projectID])
-        }
+          projectsObject = { ...projectsObject, [projectID]:{
+            FirstEmpID: first[0].EmpID,
+            SecondEmpID: second[0].EmpID,
+            projectID,
+            daysWorked: daysWorkedTogether
+          }}
+        } 
       }
     }
+
+    return projectsObject
   }
 
   const findDaysWorkedTogether = (firstDateFrom, secondDateFrom, firstDateTo, secondDateTo) => {
@@ -101,10 +99,9 @@ function App() {
     return 0
   }
 
-  function hasPair(array, a, b) {
+  const hasPair = (array, a, b) => {
     let pairStatus = false;
     for (let pair of array) {
-      console.log(pair)
       if (pair.includes(a) && pair.includes(b)) {
         pairStatus = true;
       }
@@ -130,7 +127,6 @@ function App() {
   }
 
   const getBestPairByProject = (array) => {
-    // console.log(array)
 
     // return {
     //   firstEmp.EmpID,
@@ -140,23 +136,7 @@ function App() {
     // }
   }
 
-  // const populateProjects = () => {
-  //   let projects = {};
-  //   for (const entry of setOfProjects.values()) {
-  //     projects = {...projects, entry}
-  //   }
-  //   console.log(projects)
-  // }
-
-  const findPair = (project) => {
-    // const result = {
-    //   id: true,
-    //   FirstEmpID: true,
-    //   SecondEmpID: true,
-    //   ProjectID: true,
-    //   DaysWorked: true,
-    // }
-
+  const findBestPair = () => {
     makeProjectsObject()
 
 
@@ -164,8 +144,10 @@ function App() {
   }
 
   useEffect(() => {
-    setResults(findPair());
+    setResults(findBestPair());
   }, [data]);
+
+  console.log(results)
 
   return (
     <>
