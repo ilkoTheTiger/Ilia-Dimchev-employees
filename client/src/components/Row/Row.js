@@ -6,22 +6,18 @@ import {
 } from '@chakra-ui/react'
 
 export const Row = ({
-    EmpID,
+    FirstEmpID,
+    SecondEmpID,
     ProjectID,
-    DateFrom,
-    DateTo
+    DaysWorked,
 }) => {
-    // console.log((new Date(DateTo) - new Date(DateFrom)) / 3600000 / 60)
-    console.log((new Date(DateTo) - new Date(DateFrom)) / 86400000)
-
 
     return (
         <Tr>
-            <Td isNumeric>{EmpID}</Td>
-            <Td isNumeric>{EmpID}</Td>
+            <Td isNumeric>{FirstEmpID}</Td>
+            <Td isNumeric>{SecondEmpID}</Td>
             <Td isNumeric>{ProjectID}</Td>
-            <Td isNumeric>{Number(new Date(DateTo).toLocaleString('en-GB', { day: 'numeric' })) - 
-                           Number(new Date(DateFrom).toLocaleString('en-GB', { day: 'numeric' }))}</Td>
+            <Td isNumeric>{DaysWorked}</Td>
         </Tr>
     );
 };
