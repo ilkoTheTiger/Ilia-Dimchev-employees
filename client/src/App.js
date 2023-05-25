@@ -135,12 +135,37 @@ function App() {
     return pairs
   }
 
+  const getAllCommonProjectsByPair = (firstEmp, secondEmp) => {
+    let projectsObject = Object.fromEntries(setOfProjects(data).entries())
+    let projectsWithEmployees = []
+    for (const projectID of Object.values(projectsObject)) {
+      let employeesByProjectArray = data?.filter(row => row.ProjectID == projectID)
+      projectsWithEmployees.push(employeesByProjectArray)
+    }
+    return projectsWithEmployees
+  }
+
   useEffect(() => {
     const bestPairsByProjectObject = makeProjectsObject()
+    let recordDaysWorkedTogether = 0
+    let bestProjectSoFar, firstEmp, secondEmp = undefined
+    for (const project in bestPairsByProjectObject) {
+      if (recordDaysWorkedTogether < bestPairsByProjectObject[project].daysWorked) {
+        recordDaysWorkedTogether = bestPairsByProjectObject[project].daysWorked
+        bestProjectSoFar = project
+        firstEmp = bestPairsByProjectObject[project].FirstEmpID
+        secondEmp = bestPairsByProjectObject[project].SecondEmpID
+      }
+
+      console.log(recordDaysWorkedTogether, bestProjectSoFar, firstEmp, secondEmp)
+    }
+
+    console.log(getAllCommonProjectsByPair(firstEmp, secondEmp))
+
+
     setResults(bestPairsByProjectObject);
   }, [data]);
 
-  console.log(results)
 
   return (
     <>
@@ -174,13 +199,6 @@ function App() {
                   {...results} />))}
 
             </Tbody>
-            {/* <Tfoot>
-              <Tr>
-                <Th>To convert</Th>
-                <Th>into</Th>
-                <Th isNumeric>multiply by</Th>
-              </Tr>
-            </Tfoot> */}
           </Table>
         </TableContainer>
       </div>
