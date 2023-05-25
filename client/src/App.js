@@ -56,28 +56,28 @@ function App() {
     return projects
   }
 
-  const projects = setOfProjects(data)
-
   const makeProjectsObject = () => {
-    let projectsObject = Object.fromEntries(projects.entries())
+    let projectsObject = Object.fromEntries(setOfProjects(data).entries())
     for (const projectID of Object.values(projectsObject)) {
       let employeesByProjectArray = data?.filter(row => row.ProjectID == projectID)
       let n = employeesByProjectArray.length;
       const pairs = getPairsByProject(employeesByProjectArray, n)
-      
+
       for (const pair in pairs) {
         let first = data?.filter(row => row.EmpID == pairs[pair][0] && projectID == row.ProjectID)
         let second = data?.filter(row => row.EmpID == pairs[pair][1] && projectID == row.ProjectID)
         const daysWorkedTogether = findDaysWorkedTogether(first[0].DateFrom, second[0].DateFrom, first[0].DateTo, second[0].DateTo)
-        
-        if (projectsObject[projectID].DaysWorked < daysWorkedTogether || !projectsObject[projectID].DaysWorked) {
-          projectsObject = { ...projectsObject, [projectID]:{
-            FirstEmpID: first[0].EmpID,
-            SecondEmpID: second[0].EmpID,
-            projectID,
-            daysWorked: daysWorkedTogether
-          }}
-        } 
+
+        if (projectsObject[projectID].DaysWorked < daysWorkedTogether || (!projectsObject[projectID].DaysWorked && daysWorkedTogether != 0)) {
+          projectsObject = {
+            ...projectsObject, [projectID]: {
+              FirstEmpID: first[0].EmpID,
+              SecondEmpID: second[0].EmpID,
+              projectID,
+              daysWorked: daysWorkedTogether
+            }
+          }
+        }
       }
     }
 
