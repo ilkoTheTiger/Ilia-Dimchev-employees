@@ -64,7 +64,6 @@ function App() {
       let employeesByProjectArray = data?.filter(row => row.ProjectID == projectID)
       let n = employeesByProjectArray.length;
       const pairs = getPairsByProject(employeesByProjectArray, n)
-      console.log(projectsObject)
       
       for (const pair in pairs) {
         let first = data?.filter(row => row.EmpID == pairs[pair][0] && projectID == row.ProjectID)
@@ -82,7 +81,17 @@ function App() {
       }
     }
 
+    clearSoloProjects(projectsObject)
+
     return projectsObject
+  }
+
+  const clearSoloProjects = (objectWithProjects) => {
+    for (let x in objectWithProjects) {
+      if (x == objectWithProjects[x]) {
+        delete objectWithProjects[x]
+      }
+    }
   }
 
   const findDaysWorkedTogether = (firstDateFrom, secondDateFrom, firstDateTo, secondDateTo) => {
@@ -126,25 +135,9 @@ function App() {
     return pairs
   }
 
-  const getBestPairByProject = (array) => {
-
-    // return {
-    //   firstEmp.EmpID,
-    //   secondEmp.EmpID,
-    //   firstEmp.projectID,
-    //   daysWorked: 0
-    // }
-  }
-
-  const findBestPair = () => {
-    makeProjectsObject()
-
-
-    // return result;
-  }
-
   useEffect(() => {
-    setResults(findBestPair());
+    const bestPairsByProjectObject = makeProjectsObject()
+    setResults(bestPairsByProjectObject);
   }, [data]);
 
   console.log(results)
@@ -170,15 +163,15 @@ function App() {
               <Tr>
                 <Th>Employee ID #1</Th>
                 <Th>Employee ID #2</Th>
-                <Th isNumeric>Project ID</Th>
-                <Th isNumeric>Days worked</Th>
+                <Th>Project ID</Th>
+                <Th>Days worked</Th>
               </Tr>
             </Thead>
             <Tbody>
-              {data?.map((data) => (
+              {Object.values(results).map((results) => (
                 <Row
-                  key={data.id}
-                  {...data} />))}
+                  key={results.projectID}
+                  {...results} />))}
 
             </Tbody>
             {/* <Tfoot>

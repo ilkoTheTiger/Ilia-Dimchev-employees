@@ -14,10 +14,10 @@ export const Row = ({
 
     return (
         <Tr>
-            <Td isNumeric>{FirstEmpID}</Td>
-            <Td isNumeric>{SecondEmpID}</Td>
-            <Td isNumeric>{ProjectID}</Td>
-            <Td isNumeric>{DaysWorked}</Td>
+            <Td>{FirstEmpID}</Td>
+            <Td>{SecondEmpID}</Td>
+            <Td>{ProjectID}</Td>
+            <Td>{DaysWorked}</Td>
         </Tr>
     );
 };
