@@ -2,15 +2,14 @@ import './App.css';
 import Papa from 'papaparse';
 import { useState } from 'react';
 import { formatDate } from './utils/formatDateUtils';
+import { Row } from './components/Row/Row';
 
 import {
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
-  Td,
   TableCaption,
   TableContainer,
 } from '@chakra-ui/react'
@@ -79,10 +78,10 @@ function App() {
               </Tr>
             </Thead>
             <Tbody>
-            {events?.map((event) => (
-              <Event
-                key={event.id}
-                {...event} />))}
+            {data?.map((data) => (
+              <Row
+                key={data.id}
+                {...data} />))}
 
             </Tbody>
             {/* <Tfoot>
