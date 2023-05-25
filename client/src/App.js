@@ -11,8 +11,16 @@ function App() {
     console.log(e.files)
   }
 
+
   const changeHandler = (event) => {
-    console.log(event.target.files[0])
+    Papa.parse(event.target.files[0], {
+      header: true,
+      delimiter: ", ",
+      skipEmptyLines: true,
+      complete: function (results) {
+        console.log(results.data)
+      },
+    });
   };
 
   return (
