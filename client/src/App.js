@@ -102,25 +102,26 @@ function App() {
         let second = data?.filter(row => row.EmpID == pairs[pair][1] && projectID == row.ProjectID)
         const daysWorkedTogether = findDaysWorkedTogether(first[0].DateFrom, second[0].DateFrom, first[0].DateTo, second[0].DateTo)
 
-        // if (projectsObject[projectID].DaysWorked < daysWorkedTogether || (!projectsObject[projectID].DaysWorked && daysWorkedTogether != 0)) {
-        if (projectsObject[projectID] == projectID) {
-          projectsObject = {
-            ...projectsObject, [projectID]: [{
-              FirstEmpID: first[0].EmpID,
-              SecondEmpID: second[0].EmpID,
-              projectID,
-              daysWorked: daysWorkedTogether
-            }]
-          }
-        } else {
-          projectsObject[projectID].push(
-            {
-              FirstEmpID: first[0].EmpID,
-              SecondEmpID: second[0].EmpID,
-              projectID,
-              daysWorked: daysWorkedTogether
+        if (daysWorkedTogether) {
+          if (projectsObject[projectID] == projectID) {
+            projectsObject = {
+              ...projectsObject, [projectID]: [{
+                FirstEmpID: first[0].EmpID,
+                SecondEmpID: second[0].EmpID,
+                projectID,
+                daysWorked: daysWorkedTogether
+              }]
             }
-          )
+          } else {
+            projectsObject[projectID].push(
+              {
+                FirstEmpID: first[0].EmpID,
+                SecondEmpID: second[0].EmpID,
+                projectID,
+                daysWorked: daysWorkedTogether
+              }
+            )
+          }
         }
 
       }
@@ -186,6 +187,7 @@ function App() {
     let recordDaysWorkedTogether = 0
     let firstEmp, secondEmp = undefined
 
+
     let pairs = {}
     for (const array of Object.values(objectWithPairsPerProject)) {
       for (const project of array) {
@@ -198,13 +200,9 @@ function App() {
       }
     }
 
-
-    console.log(pairs)
     if (Object.keys(pairs).length) {
       [firstEmp, secondEmp] = Object.keys(pairs).reduce(function (a, b) { return pairs[a] > pairs[b] ? a : b }).split('-')
     }
-
-
 
     for (const project in objectWithPairsPerProject) {
       if (recordDaysWorkedTogether < objectWithPairsPerProject[project].daysWorked) {
@@ -238,11 +236,11 @@ function App() {
               </Tr>
             </Thead>
             <Tbody>
-              {Object.values(results).map((results) => (
-                totalDays += Number(results.DaysWorked),
+              {Object.values(results).map((result) => (
+                totalDays += Number(result.DaysWorked),
                 <Row
-                  key={Math.random()}
-                  {...results} />
+                  key={`${result.ProjectID}-${result.DaysWorked}`}
+                  {...result} />
               )
 
               )}
@@ -256,7 +254,7 @@ function App() {
                 <Th></Th>
               </Tr>
             </Tfoot>
-            <TableCaption>Total period of time worked together <strong>{totalDays}</strong></TableCaption>
+            <TableCaption>Total period of time worked together for <strong>{totalDays}</strong></TableCaption>
           </Table>
         </TableContainer> :
           <p>No common projects.</p>}
