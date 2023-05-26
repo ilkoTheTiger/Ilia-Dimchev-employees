@@ -184,7 +184,6 @@ function App() {
     const objectWithPairsPerProject = makeProjectsObject()
     let recordDaysWorkedTogether = 0
     let firstEmp, secondEmp = undefined
-    console.log(objectWithPairsPerProject)
 
     let pairs = {}
     for (const array of Object.values(objectWithPairsPerProject)) {
