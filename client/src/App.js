@@ -19,7 +19,6 @@ function App() {
 
   const [data, setData] = useState([]);
   const [results, setResults] = useState([]);
-  const [allPairs, setAllPairs] = useState({})
   let totalDays = 0;
 
   const transform = (val, column) => {
@@ -37,15 +36,19 @@ function App() {
   }
 
   const changeHandler = (event) => {
-    Papa.parse(event.target.files[0], {
-      header: true,
-      delimiter: ", ",
-      transform: transform,
-      skipEmptyLines: true,
-      complete: function (results) {
-        setData(results.data)
-      },
-    });
+    if (event.target.files[0]) {
+      Papa.parse(event.target.files[0], {
+        header: true,
+        delimiter: ", ",
+        transform: transform,
+        skipEmptyLines: true,
+        complete: function (results) {
+          setData(results.data)
+        },
+      });
+    } else {
+      return
+    }
   };
 
   const setOfProjects = (data) => {
@@ -201,10 +204,10 @@ function App() {
       }
     }
 
-    
+
     console.log(pairs)
     if (Object.keys(pairs).length) {
-      [firstEmp, secondEmp] = Object.keys(pairs).reduce(function(a, b){ return pairs[a] > pairs[b] ? a : b }).split('-')
+      [firstEmp, secondEmp] = Object.keys(pairs).reduce(function (a, b) { return pairs[a] > pairs[b] ? a : b }).split('-')
     }
 
 
