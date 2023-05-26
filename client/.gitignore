@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+/src/App.2.js
+/src/App copy.js
+
 # dependencies
 /node_modules
 /.pnp

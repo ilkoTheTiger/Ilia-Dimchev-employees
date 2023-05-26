@@ -19,11 +19,6 @@ function App() {
   const [data, setData] = useState([]);
   const [results, setResults] = useState([]);
 
-  const onSubmitHandler = (e) => {
-    e.preventDefault()
-    console.log("show")
-  }
-
   const transform = (val, column) => {
     if (val == "NULL") {
       val = new Date().toISOString().split('T')[0]
@@ -54,6 +49,43 @@ function App() {
     const projects = new Set()
     data?.map(row => projects.add(row.ProjectID))
     return projects
+  }
+
+  const listOfAllEmployees = () => {
+    const employees = new Set()
+    console.log(data)
+    data?.map(row => employees.add(row.EmpID))
+    return Array.from(employees)
+  }
+
+  const getAllCommonProjectsByPair = (firstEmp, secondEmp) => {
+    let projectsObject = Object.fromEntries(setOfProjects(data).entries())
+    let projectsWithEmployees = []
+    for (const projectID of Object.values(projectsObject)) {
+      let employeesByProjectArray = data?.filter(row => row.ProjectID == projectID && (row.EmpID == firstEmp || row.EmpID == secondEmp))
+      projectsWithEmployees.push(employeesByProjectArray)
+    }
+
+    projectsWithEmployees = projectsWithEmployees.filter(x => x.length > 1)
+    let commonProjects = []
+    let currentProject = {}
+    for (let pair in projectsWithEmployees) {
+      currentProject = {
+        FirstEmpID: projectsWithEmployees[pair][0].EmpID,
+        SecondEmpID: projectsWithEmployees[pair][1].EmpID,
+        ProjectID: projectsWithEmployees[pair][1].ProjectID,
+        DaysWorked: findDaysWorkedTogether(
+          projectsWithEmployees[pair][0].DateFrom,
+          projectsWithEmployees[pair][1].DateFrom,
+          projectsWithEmployees[pair][0].DateTo,
+          projectsWithEmployees[pair][1].DateTo,
+        )
+      }
+      commonProjects.push(currentProject)
+      // commonProjects = {...commonProjects, ...}
+    }
+    // findDaysWorkedTogether
+    return commonProjects
   }
 
   const makeProjectsObject = () => {
@@ -135,55 +167,41 @@ function App() {
     return pairs
   }
 
-  const getAllCommonProjectsByPair = (firstEmp, secondEmp) => {
-    let projectsObject = Object.fromEntries(setOfProjects(data).entries())
-    let projectsWithEmployees = []
-    for (const projectID of Object.values(projectsObject)) {
-      let employeesByProjectArray = data?.filter(row => row.ProjectID == projectID)
-      projectsWithEmployees.push(employeesByProjectArray)
-    }
-    return projectsWithEmployees
-  }
+
 
   useEffect(() => {
     const bestPairsByProjectObject = makeProjectsObject()
     let recordDaysWorkedTogether = 0
-    let bestProjectSoFar, firstEmp, secondEmp = undefined
+    let firstEmp, secondEmp = undefined
+
     for (const project in bestPairsByProjectObject) {
       if (recordDaysWorkedTogether < bestPairsByProjectObject[project].daysWorked) {
         recordDaysWorkedTogether = bestPairsByProjectObject[project].daysWorked
-        bestProjectSoFar = project
         firstEmp = bestPairsByProjectObject[project].FirstEmpID
         secondEmp = bestPairsByProjectObject[project].SecondEmpID
       }
-
-      console.log(recordDaysWorkedTogether, bestProjectSoFar, firstEmp, secondEmp)
     }
 
-    console.log(getAllCommonProjectsByPair(firstEmp, secondEmp))
+    console.log(listOfAllEmployees())
 
-
-    setResults(bestPairsByProjectObject);
+    setResults(getAllCommonProjectsByPair(firstEmp, secondEmp));
   }, [data]);
 
-
+  console.log(results)
   return (
     <>
       <div>
-        <form onSubmit={onSubmitHandler}>
-          <input
-            type="file"
-            name="file"
-            accept=".csv"
-            onChange={changeHandler}
-            style={{ display: "block", margin: "10px auto" }}
-          />
-          <button>Show Data</button>
-        </form>
+        <input
+          type="file"
+          name="file"
+          accept=".csv"
+          onChange={changeHandler}
+          style={{ display: "block", margin: "10px auto" }}
+        />
 
-        <TableContainer>
+        {results.length ? <TableContainer>
           <Table variant='simple'>
-            <TableCaption>Longest period of time worked together by pair</TableCaption>
+            <TableCaption>Longest period of time worked together by pair { }</TableCaption>
             <Thead>
               <Tr>
                 <Th>Employee ID #1</Th>
@@ -200,7 +218,8 @@ function App() {
 
             </Tbody>
           </Table>
-        </TableContainer>
+        </TableContainer> :
+          <p>No common projects.</p>}
       </div>
 
 
