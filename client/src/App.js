@@ -108,7 +108,6 @@ function App() {
               ...projectsObject, [projectID]: [{
                 FirstEmpID: first[0].EmpID,
                 SecondEmpID: second[0].EmpID,
-                projectID,
                 daysWorked: daysWorkedTogether
               }]
             }
@@ -117,7 +116,6 @@ function App() {
               {
                 FirstEmpID: first[0].EmpID,
                 SecondEmpID: second[0].EmpID,
-                projectID,
                 daysWorked: daysWorkedTogether
               }
             )
@@ -186,7 +184,7 @@ function App() {
     const objectWithPairsPerProject = makeProjectsObject()
     let recordDaysWorkedTogether = 0
     let firstEmp, secondEmp = undefined
-
+    console.log(objectWithPairsPerProject)
 
     let pairs = {}
     for (const array of Object.values(objectWithPairsPerProject)) {
