@@ -12,12 +12,15 @@ import {
   Th,
   TableCaption,
   TableContainer,
+  Tfoot,
 } from '@chakra-ui/react'
 
 function App() {
 
   const [data, setData] = useState([]);
   const [results, setResults] = useState([]);
+  const [allPairs, setAllPairs] = useState({})
+  let totalDays = 0;
 
   const transform = (val, column) => {
     if (val == "NULL") {
@@ -53,7 +56,6 @@ function App() {
 
   const listOfAllEmployees = () => {
     const employees = new Set()
-    console.log(data)
     data?.map(row => employees.add(row.EmpID))
     return Array.from(employees)
   }
@@ -88,31 +90,44 @@ function App() {
     return commonProjects
   }
 
+  const pairToString = (first, second) => {
+    return `${first}-${second}`
+  }
+
   const makeProjectsObject = () => {
     let projectsObject = Object.fromEntries(setOfProjects(data).entries())
     for (const projectID of Object.values(projectsObject)) {
       let employeesByProjectArray = data?.filter(row => row.ProjectID == projectID)
       let n = employeesByProjectArray.length;
       const pairs = getPairsByProject(employeesByProjectArray, n)
-
       for (const pair in pairs) {
         let first = data?.filter(row => row.EmpID == pairs[pair][0] && projectID == row.ProjectID)
         let second = data?.filter(row => row.EmpID == pairs[pair][1] && projectID == row.ProjectID)
         const daysWorkedTogether = findDaysWorkedTogether(first[0].DateFrom, second[0].DateFrom, first[0].DateTo, second[0].DateTo)
 
-        if (projectsObject[projectID].DaysWorked < daysWorkedTogether || (!projectsObject[projectID].DaysWorked && daysWorkedTogether != 0)) {
+        // if (projectsObject[projectID].DaysWorked < daysWorkedTogether || (!projectsObject[projectID].DaysWorked && daysWorkedTogether != 0)) {
+        if (projectsObject[projectID] == projectID) {
           projectsObject = {
-            ...projectsObject, [projectID]: {
+            ...projectsObject, [projectID]: [{
+              FirstEmpID: first[0].EmpID,
+              SecondEmpID: second[0].EmpID,
+              projectID,
+              daysWorked: daysWorkedTogether
+            }]
+          }
+        } else {
+          projectsObject[projectID].push(
+            {
               FirstEmpID: first[0].EmpID,
               SecondEmpID: second[0].EmpID,
               projectID,
               daysWorked: daysWorkedTogether
             }
-          }
+          )
         }
+
       }
     }
-
     clearSoloProjects(projectsObject)
 
     return projectsObject
@@ -170,27 +185,43 @@ function App() {
 
 
   useEffect(() => {
-    const bestPairsByProjectObject = makeProjectsObject()
+    const objectWithPairsPerProject = makeProjectsObject()
     let recordDaysWorkedTogether = 0
     let firstEmp, secondEmp = undefined
 
-    for (const project in bestPairsByProjectObject) {
-      if (recordDaysWorkedTogether < bestPairsByProjectObject[project].daysWorked) {
-        recordDaysWorkedTogether = bestPairsByProjectObject[project].daysWorked
-        firstEmp = bestPairsByProjectObject[project].FirstEmpID
-        secondEmp = bestPairsByProjectObject[project].SecondEmpID
+    let pairs = {}
+    for (const array of Object.values(objectWithPairsPerProject)) {
+      for (const project of array) {
+        let key = pairToString(project.FirstEmpID, project.SecondEmpID)
+        if (!pairs[key]) {
+          pairs[key] = project.daysWorked
+        } else {
+          pairs[key] += project.daysWorked
+        }
       }
     }
 
-    console.log(listOfAllEmployees())
+    
+    console.log(pairs)
+    if (Object.keys(pairs).length) {
+      [firstEmp, secondEmp] = Object.keys(pairs).reduce(function(a, b){ return pairs[a] > pairs[b] ? a : b }).split('-')
+    }
+
+
+
+    for (const project in objectWithPairsPerProject) {
+      if (recordDaysWorkedTogether < objectWithPairsPerProject[project].daysWorked) {
+        recordDaysWorkedTogether = objectWithPairsPerProject[project].daysWorked
+      }
+    }
+
 
     setResults(getAllCommonProjectsByPair(firstEmp, secondEmp));
   }, [data]);
 
-  console.log(results)
   return (
     <>
-      <div>
+      <div className="appContainer">
         <input
           type="file"
           name="file"
@@ -201,7 +232,6 @@ function App() {
 
         {results.length ? <TableContainer>
           <Table variant='simple'>
-            <TableCaption>Longest period of time worked together by pair { }</TableCaption>
             <Thead>
               <Tr>
                 <Th>Employee ID #1</Th>
@@ -212,11 +242,24 @@ function App() {
             </Thead>
             <Tbody>
               {Object.values(results).map((results) => (
+                totalDays += Number(results.DaysWorked),
                 <Row
-                  key={results.projectID}
-                  {...results} />))}
+                  key={Math.random()}
+                  {...results} />
+              )
+
+              )}
 
             </Tbody>
+            <Tfoot>
+              <Tr>
+                <Th></Th>
+                <Th></Th>
+                <Th></Th>
+                <Th></Th>
+              </Tr>
+            </Tfoot>
+            <TableCaption>Total period of time worked together <strong>{totalDays}</strong></TableCaption>
           </Table>
         </TableContainer> :
           <p>No common projects.</p>}
