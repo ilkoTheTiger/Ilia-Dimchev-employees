@@ -57,12 +57,6 @@ function App() {
     return projects
   }
 
-  const listOfAllEmployees = () => {
-    const employees = new Set()
-    data?.map(row => employees.add(row.EmpID))
-    return Array.from(employees)
-  }
-
   const getAllCommonProjectsByPair = (firstEmp, secondEmp) => {
     let projectsObject = Object.fromEntries(setOfProjects(data).entries())
     let projectsWithEmployees = []
