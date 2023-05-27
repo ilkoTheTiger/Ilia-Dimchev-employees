@@ -33,7 +33,6 @@ function App() {
             .split(/[-/]/).map(pad);
           const dateTo_mmddyyyy = ([date, month, year], divider = "/") =>
             `${month}${divider}${date}${divider}${year}`;
-          const [date, month, year] = toFragments(val);
           return formatDate(new Date(dateTo_mmddyyyy(toFragments(val), "-")))
 
         }
