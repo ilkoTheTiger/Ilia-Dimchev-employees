@@ -34,13 +34,12 @@ function App() {
           const dateTo_mmddyyyy = ([date, month, year], divider = "/") =>
             `${month}${divider}${date}${divider}${year}`;
           const [date, month, year] = toFragments(val);
-          return dateTo_mmddyyyy(toFragments(val), "-")
+          return formatDate(new Date(dateTo_mmddyyyy(toFragments(val), "-")))
 
         }
         return formatDate(new Date(val))
       } catch {
-        console.log(val)
-        console.log(`Not a recognized Date Format: ${val}`)
+        alert(`Not a recognized Date Format: ${val}`)
       }
     }
     return val;
