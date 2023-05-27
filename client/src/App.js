@@ -27,8 +27,19 @@ function App() {
     }
     if (column == "DateTo" || column == "DateFrom") {
       try {
+        if (new Date(val) == 'Invalid Date') {
+          const pad = v => v.padStart(2, `0`);
+          const toFragments = val => val
+            .split(/[-/]/).map(pad);
+          const dateTo_mmddyyyy = ([date, month, year], divider = "/") =>
+            `${month}${divider}${date}${divider}${year}`;
+          const [date, month, year] = toFragments(val);
+          return dateTo_mmddyyyy(toFragments(val), "-")
+
+        }
         return formatDate(new Date(val))
       } catch {
+        console.log(val)
         console.log(`Not a recognized Date Format: ${val}`)
       }
     }
