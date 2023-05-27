@@ -14,6 +14,7 @@ import {
   TableContainer,
   Tfoot,
 } from '@chakra-ui/react'
+import moment from 'moment/moment';
 
 function App() {
 
@@ -27,16 +28,20 @@ function App() {
     }
     if (column == "DateTo" || column == "DateFrom") {
       try {
-        if (new Date(val) == 'Invalid Date') {
+        if (new Date(val) != 'Invalid Date') {
+          return formatDate(new Date(val));
+        }
+        else if (new Date(val) == 'Invalid Date' && !val.includes('/')) {
+          return formatDate(new Date(moment(val).format('L')));
+        }
+        else {
           const pad = v => v.padStart(2, `0`);
           const toFragments = val => val
-            .split(/[-/]/).map(pad);
+          .split(/[-/]/).map(pad);
           const dateTo_mmddyyyy = ([date, month, year], divider = "/") =>
-            `${month}${divider}${date}${divider}${year}`;
+          `${month}${divider}${date}${divider}${year}`;
           return formatDate(new Date(dateTo_mmddyyyy(toFragments(val), "-")))
-
         }
-        return formatDate(new Date(val))
       } catch {
         alert(`Not a recognized Date Format: ${val}`)
       }
